@@ -92,6 +92,6 @@ def _convert_tag(instance: element.Tag) -> dict:
     """Handle Tag type."""
     tag_result = {}
     tag_result['attrs'] = instance.attrs
-    tag_result['text'] = instance.contents
+    tag_result['text'] = instance.string
     tag_result.update(convert(instance.contents))
     return tag_result
