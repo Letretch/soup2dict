@@ -96,5 +96,5 @@ def _convert_tag(instance: element.Tag) -> dict:
         tag_result['text'] = instance.string
     else:
         tag_result['text'] = ""
-    tag_result.update(convert(instance.contents))
+    tag_result['elements'] = convert(instance.contents)
     return tag_result
