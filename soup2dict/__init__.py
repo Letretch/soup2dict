@@ -42,6 +42,10 @@ def _convert_rs(instance: Union[element.ResultSet, list]) -> dict:
     transformed: Dict[str, Any] = {}
 
     for soup_element in instance:
+        # Ignore NavigableString elements
+        if isinstance(soup_element, element.NavigableString):
+            continue
+
         parsed = convert(soup_element)
         if not parsed:
             continue
@@ -86,10 +90,7 @@ def _convert_ns(
 @convert.instance(element.Tag)
 def _convert_tag(instance: element.Tag) -> dict:
     """Handle Tag type."""
-    tag_result = _attribute_at_prepender(instance.attrs)
-    tag_result['#text'] = ' '.join(
-        [text.replace('\n    ', ' ') for text in instance.stripped_strings],
-    )
+    tag_result = {}
+    tag_result['attrs'] = instance.attrs
     tag_result.update(convert(instance.contents))
-
     return tag_result
