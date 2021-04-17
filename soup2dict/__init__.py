@@ -42,8 +42,8 @@ def _convert_rs(instance: Union[element.ResultSet, list]) -> dict:
     transformed: Dict[str, Any] = {}
 
     for soup_element in instance:
-        # Ignore NavigableString elements
-        if isinstance(soup_element, element.NavigableString):
+        # Ignore NavigableString, Stylesheet and Script elements
+        if isinstance(soup_element, element.NavigableString) or isinstance(soup_element, element.Stylesheet) or isinstance(soup_element, element.Script):
             continue
 
         parsed = convert(soup_element)
@@ -66,8 +66,8 @@ def _convert_rs(instance: Union[element.ResultSet, list]) -> dict:
 @convert.instance(element.XMLProcessingInstruction)
 @convert.instance(element.Declaration)
 @convert.instance(element.Doctype)
-@convert.instance(element.Stylesheet)
-@convert.instance(element.Script)
+@convert.instance(element.Stylesheet) # type: ignore
+@convert.instance(element.Script) # type: ignore
 @convert.instance(element.TemplateString)
 def _convert_ns(
     instance: Union[
@@ -91,10 +91,11 @@ def _convert_ns(
 def _convert_tag(instance: element.Tag) -> dict:
     """Handle Tag type."""
     tag_result = {}
+    tag_result['name'] = instance.name
     tag_result['attrs'] = instance.attrs
     if instance.string != None:
         tag_result['text'] = instance.string
     else:
         tag_result['text'] = ""
-    tag_result['elements'] = convert(instance.contents)
+    tag_result.update(convert(instance.contents))
     return tag_result
